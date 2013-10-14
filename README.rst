@@ -44,7 +44,7 @@ Use orm.db(alias) to get the other database, and db.djony_<package>_<classname> 
 to get access to the correspondent pony model.
 
 Using other databases example (let the other database is identified by other_alias
-in Django DATABASES settings):
+in Django DATABASES settings)::
 
     from djony import orm
     db = orm.db(other_alias)
@@ -55,8 +55,8 @@ in Django DATABASES settings):
 Limitations
 -----------
 
- - No mapping for ForeignKey(to_field=...), the correspondent attribute is converted to simple one
- - No mapping for partial database mapping (the only full one is supported)
+- No mapping for ForeignKey(to_field=...), the correspondent attribute is converted to simple one
+- No mapping for partial database mapping (the only full one is supported)
 
 Notes
 -----
@@ -82,7 +82,8 @@ You can correct list of string-based primitive field internal types
 using ``DJONY_STRING_FIELD_INTERNAL_TYPES`` list.
 
 You can add engines to use with djony using
-``DJONY_ENGINES`` settings. The format is like the following:
+``DJONY_ENGINES`` settings. The format is like the following::
+    
     {
         ...
         'mysql': {
@@ -90,6 +91,7 @@ You can add engines to use with djony using
             'args_convertor':mysql_get_args,
         },
     }
+
 where the 'args_converter' is a function taking database settings dictionary
 from Django and returing dictionary of pony-style keyword parameters passed
 to the pony provider class constructor.
