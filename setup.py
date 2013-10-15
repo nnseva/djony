@@ -9,7 +9,7 @@ def read(fname):
 setupconf = dict(
     name = 'djony',
     version = "0.0.1",
-    license = 'GPL',
+    license = 'LGPL',
     url = 'https://github.com/nnseva/djony/',
     author = 'Vsevolod Novikov',
     author_email = 'nnseva@gmail.com',
@@ -22,7 +22,7 @@ setupconf = dict(
 
     classifiers = [
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GPL License',
+        'License :: OSI Approved :: LGPL License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         ],
