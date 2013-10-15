@@ -12,7 +12,7 @@ The first release (for MySQL only a while)
 Base
 ----
 
-NOTE; this package has been inspired by aldjemy package.
+NOTE: this package has been inspired by aldjemy package.
 
 Small package for integration Pony ORM (http://doc.ponyorm.com/)
 into an existent Django (https://docs.djangoproject.com) project.
