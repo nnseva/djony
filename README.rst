@@ -12,7 +12,7 @@ The first release (for MySQL only a while)
 Base
 ----
 
-NOTE; this package has been inspired by aldjemy package.
+NOTE: this package has been inspired by aldjemy package.
 
 Small package for integration Pony ORM (http://doc.ponyorm.com/)
 into an existent Django (https://docs.djangoproject.com) project.
@@ -57,6 +57,8 @@ Limitations
 
 - No mapping for ForeignKey(to_field=...), the correspondent attribute is converted to simple one
 - No mapping for partial database mapping (the only full one is supported)
+- Django inheritance is mapped to Pony one-to-one relationship with parent entity; the default name of
+  parent reference attribute is <lowercase-parent-class-name>_ptr
 
 Notes
 -----
@@ -95,3 +97,25 @@ You can add engines to use with djony using
 where the 'args_converter' is a function taking database settings dictionary
 from Django and returing dictionary of pony-style keyword parameters passed
 to the pony provider class constructor.
+
+TODO-LIST
+---------
+
+1. Support for all database libraries common for Django and Pony
+2. Regression testing
+3. Testing for threading compatibility
+4. Stress-tests for production environments
+5. Django-vs-pony productivity comparison tests for production environments
+
+Pull requests are very appretiated!
+
+Roadmap
+-------
+
+Rewriting some Django applications to use djony instead of Django ORM
+
+Newer be implemented
+--------------------
+
+1. Query syntax compatibility with Django ORM
+2. Mapping for Django-style inheritance
