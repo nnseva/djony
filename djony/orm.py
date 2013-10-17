@@ -188,6 +188,8 @@ def get_fk_type(f,fields,db,alias,**kwargs):
 
     if f.rel.related_name:
         kw['reverse'] = str(f.rel.related_name)
+    elif isinstance(f,models.OneToOneField):
+        kw['reverse'] = str(my_model.__name__.lower())
     else:
         kw['reverse'] = str(my_model.__name__.lower())+'_set'
     kw.update(kwargs)
