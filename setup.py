@@ -18,7 +18,7 @@ setupconf = dict(
 
     packages = find_packages(),
 
-    install_requires = ['pony>=0.4.8'],
+    install_requires = ['pony>=0.4.9'],
 
     classifiers = [
         'Intended Audience :: Developers',
