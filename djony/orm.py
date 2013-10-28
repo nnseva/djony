@@ -32,26 +32,26 @@ if not (datetime.time, TimeConverter) in MySQLProvider.converter_classes:
     )
 
 PRIMITIVE_DATA_TYPES = {
-    models.AutoField:         lambda f,R,**kw: R(int,auto=True,**kw),
-    models.BooleanField:      lambda f,R,**kw: R(bool,**kw),
-    models.CharField:         lambda f,R,**kw: R(unicode,f.max_length,**kw),
-    models.CommaSeparatedIntegerField: lambda f,R,**kw: R(unicode,f.max_length,**kw),
-    models.DateField:         lambda f,R,**kw: R(datetime.date,**kw),
-    models.DateTimeField:     lambda f,R,**kw: R(datetime.datetime,**kw),
-    models.DecimalField:      lambda f,R,**kw: R(decimal.Decimal,scale=f.decimal_places,precision=f.max_digits,**kw),
-    models.FileField:         lambda f,R,**kw: R(unicode,f.max_length,**kw),
-    models.FilePathField:     lambda f,R,**kw: R(unicode,f.max_length,**kw),
-    models.FloatField:        lambda f,R,**kw: R(float,**kw),
-    models.IntegerField:      lambda f,R,**kw: R(int,**kw),
-    models.BigIntegerField:   lambda f,R,**kw: R(long,**kw),
-    models.IPAddressField:    lambda f,R,**kw: R(unicode,f.max_length,**kw),
-    models.NullBooleanField:  lambda f,R,**kw: R(bool,**kw),
-    models.PositiveIntegerField: lambda f,R,**kw: R(int,**kw),
-    models.PositiveSmallIntegerField: lambda f,R,**kw: R(int,**kw),
-    models.SlugField:         lambda f,R,**kw: R(unicode,f.max_length,**kw),
-    models.SmallIntegerField: lambda f,R,**kw: R(int,**kw),
-    models.TextField:         lambda f,R,**kw: R(unicode,**kw),
-    models.TimeField:         lambda f,R,**kw: R(datetime.time,**kw),
+    'AutoField':         lambda f,R,**kw: R(int,auto=True,**kw),
+    'BooleanField':      lambda f,R,**kw: R(bool,**kw),
+    'CharField':         lambda f,R,**kw: R(unicode,f.max_length,**kw),
+    'CommaSeparatedIntegerField': lambda f,R,**kw: R(unicode,f.max_length,**kw),
+    'DateField':         lambda f,R,**kw: R(datetime.date,**kw),
+    'DateTimeField':     lambda f,R,**kw: R(datetime.datetime,**kw),
+    'DecimalField':      lambda f,R,**kw: R(decimal.Decimal,scale=f.decimal_places,precision=f.max_digits,**kw),
+    'FileField':         lambda f,R,**kw: R(unicode,f.max_length,**kw),
+    'FilePathField':     lambda f,R,**kw: R(unicode,f.max_length,**kw),
+    'FloatField':        lambda f,R,**kw: R(float,**kw),
+    'IntegerField':      lambda f,R,**kw: R(int,**kw),
+    'BigIntegerField':   lambda f,R,**kw: R(long,**kw),
+    'IPAddressField':    lambda f,R,**kw: R(unicode,f.max_length,**kw),
+    'NullBooleanField':  lambda f,R,**kw: R(bool,**kw),
+    'PositiveIntegerField': lambda f,R,**kw: R(int,**kw),
+    'PositiveSmallIntegerField': lambda f,R,**kw: R(int,**kw),
+    'SlugField':         lambda f,R,**kw: R(unicode,f.max_length,**kw),
+    'SmallIntegerField': lambda f,R,**kw: R(int,**kw),
+    'TextField':         lambda f,R,**kw: R(unicode,**kw),
+    'TimeField':         lambda f,R,**kw: R(datetime.time,**kw),
 }
 
 # we allow to place DJONY_PRIMITIVE_DATA_TYPES dict to settings.py
@@ -104,13 +104,32 @@ ENGINES = {
 ENGINES.update(getattr(settings, 'DJONY_ENGINES', {}))
 
 def _get_primitive_type(f):
+    return _get_primitive_type_for(type(f))
+
+def issubclass_name(tp,nm):
+    if tp.__name__ == nm:
+        return True
+    for b in tp.__bases__:
+        if b.__name__ == nm:
+            return True
+        r = issubclass_name(b,nm)
+        if r:
+            return True
+    return False
+
+def _get_primitive_type_for(tp):
     T = None
-    if type(f) in PRIMITIVE_DATA_TYPES:
-        T = type(f)
+    if tp.__name__ in PRIMITIVE_DATA_TYPES:
+        T = tp.__name__
     else:
         for t in PRIMITIVE_DATA_TYPES:
-            if isinstance(f,t):
+            if issubclass_name(tp,t):
                 T = t
+                break
+    if not T:
+        for b in tp.__bases__:
+            T = _get_primitive_type_for(b)
+            if T:
                 break
     return T
 
@@ -296,18 +315,26 @@ def get_pony_model_args(model,db,alias=None):
         t = get_primitive_type(f,column=f.db_column)
         if not t:
             t = get_fk_type(f,kw,db,alias=alias)
-        kw[f.name] = t
+        if t:
+            kw[f.name] = t
     for f in model._meta.many_to_many:
         if f.model != model:
             continue
         t = get_m2m_type(f,db,alias=alias)
-        kw[f.name] = t
+        if t:
+            kw[f.name] = t
     kw['_table_'] = model._meta.db_table
     return db.djony['models'][name]
 
 def get_django_models():
     ac = AppCache()
     return ac.get_models()
+
+def fix_pony_mode():
+    import sys
+    import pony
+    if hasattr(sys,'ps1'):
+        pony.MODE = 'INTERACTIVE'
 
 from pony.utils import localbase
 class Databases(localbase):
@@ -320,6 +347,7 @@ class Databases(localbase):
         if not alias in self.databases:
             self.databases[alias] = create_pony_db(alias)
             db_generate_mapping(self.databases[alias],alias)
+            self.databases[alias].disconnect()
         return self.databases[alias]
 
     def __call__(self,alias=None):

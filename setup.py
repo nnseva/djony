@@ -26,6 +26,7 @@ setupconf = dict(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         ],
+    zip_safe=False,
     )
 
 if __name__ == '__main__':
