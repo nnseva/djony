@@ -114,7 +114,7 @@ Roadmap
 
 Rewriting some Django applications to use djony instead of Django ORM
 
-Newer be implemented
+Never be implemented
 --------------------
 
 1. Query syntax compatibility with Django ORM
