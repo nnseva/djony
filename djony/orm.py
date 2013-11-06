@@ -215,9 +215,11 @@ def get_fk_type(f,fields,db,alias,**kwargs):
     r = R(to_name,**kw)
     r.name = f.name
     O = Set
+    cascade_delete = (f.rel.on_delete == models.CASCADE)
+
     if isinstance(f,models.OneToOneField):
         O = Optional
-    related = O(my_name,reverse=f.name)
+    related = O(my_name,reverse=f.name,cascade_delete=cascade_delete)
     related.name = kw['reverse']
     to_model_args['kw'][kw['reverse']] = related
     return r
