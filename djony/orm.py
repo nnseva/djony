@@ -284,6 +284,8 @@ def create_pony_db(alias=None):
     return Database(e['provider'],**e['args'])
 
 def db_generate_mapping(db,alias=None):
+    if not alias:
+        alias = 'default'
     models = get_django_models()
 
     for model in models:
@@ -292,8 +294,9 @@ def db_generate_mapping(db,alias=None):
     for n in db.djony['models']:
         m = db.djony['models'][n]
         t = type(n,(db.Entity,),m['kw'])
+        t.__module__ = 'djony.orm.db("%s")' % alias
         if not alias or alias == 'default':
-            m['model'].p = t
+            m['model']._p = t
     db.generate_mapping(create_tables=False)
 
 def get_pony_model_args(model,db,alias=None):
@@ -356,3 +359,10 @@ class Databases(localbase):
         return self.db(alias)
 
 db = Databases()
+
+if not hasattr(models.base.ModelBase,'p'):
+    # the p-property getter
+    def p(self):
+        db()
+        return self._p
+    models.base.ModelBase.p = property(p)
