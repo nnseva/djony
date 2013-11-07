@@ -5,6 +5,11 @@ Djony
 Whats new?
 ----------
 
+2013-11-07:
+
+The tastypie_djony package using djony has been issued https://github.com/nnseva/tastypie_djony
+Some fixes and improvements
+
 2013-10-14:
 
 The first release (for MySQL only a while)
